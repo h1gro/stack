@@ -5,7 +5,7 @@
 
 int main()
 {
-    struct stack_t stk = {INIT(stk)};
+    struct stack_t stk = {INIT(CANARY, stk)};
 
     StackCtor(&stk);
 
@@ -16,7 +16,8 @@ int main()
     StackPush(&stk, 5);
     StackPop(&stk);
 
-    StackDump(&stk, __func__, __FILE__, __LINE__);
+    int dump_call = MAIN;
+    StackDump(&stk, __func__, __FILE__, __LINE__, dump_call);
 
     StackDtor(&stk);
 
