@@ -1,3 +1,4 @@
+#include <TXLib.h>
 #include <stdlib.h>
 
 #include "global.h"
@@ -15,7 +16,20 @@ int main()
     StackPush(&stk, 3);
     StackPush(&stk, 4);
     StackPush(&stk, 5);
-    StackPop(&stk);
+    StackPush(&stk, 1);
+    StackPush(&stk, 2);
+    StackPush(&stk, 3);
+    StackPush(&stk, 4);
+    StackPush(&stk, 5);
+    StackPush(&stk, 1);
+    StackPush(&stk, 2);
+    StackPush(&stk, 3);
+    StackPush(&stk, 4);
+    StackPush(&stk, 5);
+    StackPush(&stk, 1);
+    StackPush(&stk, 2);
+    StackPush(&stk, 3);
+    StackPush(&stk, 4);
 
     int dump_call = INFO_PRINT;
     StackDump(&stk, __func__, __FILE__, __LINE__, dump_call);

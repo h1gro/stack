@@ -10,6 +10,8 @@
 //on/off debug mode
 #define DEBUG 153.153
 
+#define DUMP_FILE "dump.txt"
+
 #define LEVEL_OF_PROTECTION
 
 #ifdef DEBUG
@@ -24,7 +26,7 @@ typedef double stackelem_t;
 
 const stackelem_t POISON  = -153.153;
 const stackelem_t CANARY  = 531.531;
-const stackelem_t EPSILON = 1E-9;
+const stackelem_t EPSILON = 1e-4;
 
 enum errors_t
 {
@@ -39,12 +41,12 @@ enum errors_t
     CANARY2_BUF_ERROR   = 8,
     CANARY1_STR_ERROR   = 9,
     CANARY2_STR_ERROR   = 10,
-    ERROR               = 11
+    MY_ERROR            = 11
 };
 
 enum stack
 {
-    CAPACITY     = 10,
+    CAPACITY     = 3,
     CAPAC_RESIZE = 2,
     CAPAC_SHIFT  = 4
 };
@@ -78,6 +80,7 @@ struct stack_t
     int size;
     int capacity;
     int error_code;
+    FILE *output;
 #ifdef DEBUG
     stackelem_t canary2;
 #endif

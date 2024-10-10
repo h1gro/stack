@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <assert.h>
+#include <math.h>
 
 #include "global.h"
 #include "checks.h"
 #include "output.h"
+#include "stackfuncs.h"
 
 int CheckForErrors(struct stack_t *stk)
 {
@@ -12,24 +14,26 @@ int CheckForErrors(struct stack_t *stk)
         assert(stk->data);
         assert(stk->capacity);
         assert(stk->size >= 0);
-        assert((long long int)(stk->data[-1] - CANARY) == 0);
-        assert((long long int)(stk->data[stk->capacity] - CANARY) == 0);
+        assert(fabs(stk->data[-1] - CANARY) < EPSILON);
+        assert(fabs(stk->data[stk->capacity] - CANARY) < EPSILON);
 
+
+        //printf("canary1 = %lg, canary2 = %lg\n", stk->canary1, stk->canary2);
         #ifdef DEBUG
-            assert((long long int)(stk->canary1 - CANARY) == 0);
-            assert((long long int)(stk->canary2 - CANARY) == 0);
+            assert(fabs(stk->canary1 - CANARY) < EPSILON);
+            assert(fabs(stk->canary2 - CANARY) < EPSILON);
         #endif
 
     #endif
 
     #ifdef DEBUG
-        if ((long long int)(stk->canary1 - CANARY) == 0)
+        if (fabs(stk->canary1 - CANARY) > EPSILON)
         {
             stk->error_code = CANARY1_STR_ERROR;
             return stk->error_code;
         }
 
-        if ((long long int)(stk->canary2 - CANARY) == 0)
+        if (fabs(stk->canary2 - CANARY) > EPSILON)
         {
             stk->error_code = CANARY2_STR_ERROR;
             return stk->error_code;
@@ -66,17 +70,18 @@ int CheckForErrors(struct stack_t *stk)
         return stk->error_code;
     }
 
-    if ((long long int)(stk->data[-1] - CANARY) == 0)
+    if (fabs(stk->data[-1] - CANARY) > EPSILON)
     {
         stk->error_code = CANARY1_BUF_ERROR;
         return stk->error_code;
     }
 
-    if ((long long int)(stk->data[stk->capacity] - CANARY) == 0)
+    if (fabs(stk->data[stk->capacity] - CANARY) > EPSILON)
     {
         stk->error_code = CANARY2_BUF_ERROR;
         return stk->error_code;
     }
+
     return NO_ERRORS;
 }
 

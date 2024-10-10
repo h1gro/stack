@@ -1,7 +1,7 @@
-called from main:21 main.cpp
-name stk born at main:21(main.cpp)
-size 4
-capacity 10
+called from main:35 main.cpp
+name stk born at main:35(main.cpp)
+size 19
+capacity 24
  Data:
 data [-1] = 531.531 (CANARY)
 data [0] = 1
@@ -9,9 +9,23 @@ data [1] = 2
 data [2] = 3
 data [3] = 4
 data [4] = 5
-data [5] = -153.153 (POISON)
-data [6] = -153.153 (POISON)
-data [7] = -153.153 (POISON)
-data [8] = -153.153 (POISON)
-data [9] = -153.153 (POISON)
-data [10] = 531.531 (CANARY)
+data [5] = 1
+data [6] = 2
+data [7] = 3
+data [8] = 4
+data [9] = 5
+data [10] = 1
+data [11] = 2
+data [12] = 3
+data [13] = 4
+data [14] = 5
+data [15] = 1
+data [16] = 2
+data [17] = 3
+data [18] = 4
+data [19] = -153.153 (POISON)
+data [20] = -153.153 (POISON)
+data [21] = -153.153 (POISON)
+data [22] = -153.153 (POISON)
+data [23] = -153.153 (POISON)
+data [24] = 531.531 (CANARY)
