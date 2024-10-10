@@ -1,4 +1,8 @@
-#include "prototype.h"
+#include <assert.h>
+#include <stdio.h>
+
+#include "global.h"
+#include "output.h"
 
 void StackDump(struct stack_t *stk, const char* func, const char* file, int line, int dump_call)
 {
@@ -8,52 +12,65 @@ void StackDump(struct stack_t *stk, const char* func, const char* file, int line
     assert(stk->func);
     assert(stk->name);
 
-    #ifdef DEBUG
-        printf("called from %s:%d %s\n"
-               "name %s born at %s:%d(%s)\n",
-                func, line, file, stk->name,
-                func, line, file);
+    FILE * output = fopen(DUMP_FILE, "w");
 
-        if(dump_call != MAIN)
+    #ifdef DEBUG
+        fprintf(output, "called from %s:%d %s\n"
+                        "name %s born at %s:%d(%s)\n",
+                        func, line, file, stk->name,
+                        func, line, file);
+
+        if(dump_call == ERROR_PRINT)
         {
-            StackErrorOutput(stk);
+            StackErrorOutput(stk, output);
         }
     #endif
 
-    printf("size %d\n"
-           "capacity %d\n Data:\n",
-           stk->size, stk->capacity);
+    fprintf(output, "size %d\n"
+                    "capacity %d\n Data:\n",
+                    stk->size, stk->capacity);
 
     for (int i = -1; i < stk->capacity + NUM_CANARIES_IN_RIGHT; i++)
     {
-        printf("data [%d] = %lg\n", i, (stk->data)[i]);
+        if ((long long int)(stk->data[i] - POISON) == 0)
+        {
+            fprintf(output, "data [%d] = %lg (POISON)\n", i, (stk->data)[i]);
+        }
+        else if ((long long int)(stk->data[i] - CANARY) == 0)
+        {
+            fprintf(output, "data [%d] = %lg (CANARY)\n", i, (stk->data)[i]);
+        }
+        else
+        {
+            fprintf(output, "data [%d] = %lg\n", i, (stk->data)[i]);
+        }
     }
 
-    //printf("End of Dump\n");
+    fclose(output);
 }
 
-void StackErrorOutput(struct stack_t *stk)
+void StackErrorOutput(struct stack_t *stk, FILE * output)
 {
     switch(stk->error_code)
     {
-    case PUSH_ERROR:        printf("Error in stackpush()\n");
+    case PUSH_ERROR:        fprintf(output, "Error in stackpush()\n");
                             break;
-    case CTOR_ERROR:        printf("Error in ctor\n");
+    case CTOR_ERROR:        fprintf(output, "Error in ctor\n");
                             break;
-    case STK_ERROR:         printf("Error in struct\n");
+    case STK_ERROR:         fprintf(output, "Error in struct\n");
                             break;
-    case CAPACITY_ERROR:    printf("Error in capacity\n");
+    case CAPACITY_ERROR:    fprintf(output, "Error in capacity\n");
                             break;
-    case SIZE_ERROR:        printf("Error in size\n");
+    case SIZE_ERROR:        fprintf(output, "Error in size\n");
                             break;
-    case CANARY1_BUF_ERROR: printf("Error first canary in buffer\n");
+    case CANARY1_BUF_ERROR: fprintf(output, "Error first canary in buffer\n");
                             break;
-    case CANARY2_BUF_ERROR: printf("Error second canary in buffer\n");
+    case CANARY2_BUF_ERROR: fprintf(output, "Error second canary in buffer\n");
                             break;
-    case CANARY1_STR_ERROR: printf("Error first canary in struct\n");
+    case CANARY1_STR_ERROR: fprintf(output, "Error first canary in struct\n");
                             break;
-    case CANARY2_STR_ERROR: printf("Error second canary in strucr\n");
+    case CANARY2_STR_ERROR: fprintf(output, "Error second canary in strucr\n");
                             break;
-    default:                printf("Unknown error\n");
+    default:                fprintf(output, "Unknown error\n");
     }
 }

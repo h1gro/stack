@@ -1,7 +1,8 @@
-#include "prototype.h"
-
-#include <TXLib.h>
 #include <stdlib.h>
+
+#include "global.h"
+#include "stackfuncs.h"
+#include "output.h"
 
 int main()
 {
@@ -16,7 +17,7 @@ int main()
     StackPush(&stk, 5);
     StackPop(&stk);
 
-    int dump_call = MAIN;
+    int dump_call = INFO_PRINT;
     StackDump(&stk, __func__, __FILE__, __LINE__, dump_call);
 
     StackDtor(&stk);
