@@ -3,11 +3,11 @@ name stk born at main:22(main.cpp)
 size 3
 capacity 6
  Data:
-data [-1] = 531.531
+data [-1] = 531.531 (CANARY)
 data [0] = 1
 data [1] = 2
 data [2] = 4
 data [3] = 5
-data [4] = -153.153
-data [5] = -153.153
-data [6] = 531.531
+data [4] = -153.153 (POISON)
+data [5] = -153.153 (POISON)
+data [6] = 531.531 (CANARY)

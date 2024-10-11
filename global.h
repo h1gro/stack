@@ -1,10 +1,6 @@
 #ifndef IFDEF_CONST
 #define IFDEF_CONST
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-
 #define STACK_CHECK(stk) (StackCheck(stk, __FILE__, __LINE__, __func__));
 
 //on/off debug mode

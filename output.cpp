@@ -31,11 +31,11 @@ void StackDump(struct stack_t *stk, const char* func, const char* file, int line
 
     for (int i = -1; i < stk->capacity + NUM_CANARIES_IN_RIGHT; i++)
     {
-        if (fabs(stk->data[i] - POISON) < 0)
+        if (fabs(stk->data[i] - POISON) < EPSILON)
         {
             fprintf(stk->output, "data [%d] = %lg (POISON)\n", i, (stk->data)[i]);
         }
-        else if (fabs(stk->data[i] - CANARY) < 0)
+        else if (fabs(stk->data[i] - CANARY) < EPSILON)
         {
             fprintf(stk->output, "data [%d] = %lg (CANARY)\n", i, (stk->data)[i]);
         }

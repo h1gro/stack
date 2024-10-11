@@ -17,7 +17,6 @@ void StackCtor(struct stack_t *stk)
         stk->canary1 = CANARY;
         stk->canary2 = CANARY;
     #endif
-    //printf("canary1 = %lg, canary2 = %lg\n", stk->canary1, stk->canary2);
 
     stk->size = 0;
     stk->error_code = NO_ERRORS;
@@ -26,7 +25,6 @@ void StackCtor(struct stack_t *stk)
 
     FillingDataPoison(stk->data, stk->capacity - stk->size);
 
-    //printf("canary1 = %lg, canary2 = %lg\n", stk->canary1, stk->canary2);
     stk->data[-1] = CANARY;
     stk->data[stk->capacity] = CANARY;
 
@@ -68,8 +66,6 @@ void StackPush(struct stack_t *stk, stackelem_t elem)
 
     stk->data[stk->size] = elem;
     stk->size++;
-    printf("cap = %d, size = %d,\n", stk->capacity, stk->size);
-    printf("elem = %lg\n", stk->data[stk->size]);
 
     assert(stk->capacity);
     assert(stk->size);
@@ -96,7 +92,6 @@ stackelem_t StackPop(struct stack_t *stk)
 
 void ResizeIf(struct stack_t *stk, int pop_or_push)
 {
-    printf("pop_or_push = %d\n", pop_or_push);
     if (pop_or_push == PUSH && stk->size == stk->capacity)
     {
         size_t elem_size = sizeof(stackelem_t);
@@ -116,7 +111,6 @@ void ResizeIf(struct stack_t *stk, int pop_or_push)
         stk->data[stk->capacity] = CANARY;
 
         stk->size--;
-        printf("push cap = %d\n", stk->capacity);
     }
 
     if (pop_or_push == POP && stk->size * CAPAC_RESIZE + CAPAC_SHIFT < stk->capacity)
@@ -126,7 +120,5 @@ void ResizeIf(struct stack_t *stk, int pop_or_push)
         stk->data = (stackelem_t*) realloc(stk->data - NUM_CANARIES_IN_LEFT, (stk->capacity + NUM_CANARIES_BUF) * sizeof(stackelem_t)) + NUM_CANARIES_IN_LEFT;
 
         stk->data[stk->capacity] = CANARY;
-
-        printf("pop cap = %d\n", stk->capacity);
     }
 }
