@@ -6,14 +6,38 @@
 //on/off debug mode
 #define DEBUG 153.153
 
-#define LEVEL_OF_PROTECTION
+//----------------------------------------------------
+// Levels of protection:
+// ZERO_LP   no protection
+// FIRST_LP  canaries in buffer and in struct
+// SECOND_LP canaries + hash in buffer and in struct
 
-#ifdef DEBUG
-    #define ON_DEBUG(code)code
-    #define INIT(canary ,name) canary ,__FILE__, __LINE__, __func__, #name
+//Uncomment only one mode! Don't mixe!
+//================
+//#define ZERO_LP
+//#define FIRST_LP
+#define SECOND_LP
+//================
+
+#ifndef ZERO_LP
+    #ifdef  SECOND_LP
+        #define FIRST_LP
+    #endif
+#endif
+//----------------------------------------------------
+
+#ifdef FIRST_LP
+    #ifdef DEBUG
+        #define INIT(canary, name) canary, __LINE__, __FILE__, __func__, #name
+    #else
+        #define INIT(canary)
+    #endif
 #else
-    #define ON_DEBUG(code)
-    #define INIT(name)
+    #ifdef DEBUG
+        #define INIT(name) __LINE__, __FILE__, __func__, #name
+    #else
+        #define INIT()
+    #endif
 #endif
 
 typedef double stackelem_t;
@@ -24,7 +48,7 @@ const stackelem_t POISON  = -153.153;
 const stackelem_t CANARY  = 531.531;
 const stackelem_t EPSILON = 1e-4;
 
-enum errors_t
+enum errors
 {
     NO_ERRORS         = 0,
     PUSH_ERROR        = 1,
@@ -37,7 +61,10 @@ enum errors_t
     CANARY2_BUF_ERROR = 8,
     CANARY1_STR_ERROR = 9,
     CANARY2_STR_ERROR = 10,
-    MY_ERROR          = 11,
+    ERROR             = 11,
+    HASH_BUFFER_ERROR = 12,
+    HASH_STRUCT_ERROR = 13,
+    FILE_ERROR        = 14,
     MY_PUSH_ERROR     = 20,
 };
 
@@ -67,22 +94,31 @@ enum canaries
 
 struct stack_t
 {
-#ifdef DEBUG
+    #ifdef FIRST_LP
     stackelem_t canary1;
-    const char* file;
-    const int   line;
-    const char* func;
-    const char* name;
-#endif
-    stackelem_t *data;
+    #endif
+
+    #ifdef DEBUG
+        const int   line;
+        const char* file;
+        const char* func;
+        const char* name;
+    #endif
+
+    #ifdef SECOND_LP
+    uint_least32_t hash_buffer;
+    uint_least32_t hash_struct;
+    #endif
+
+    stackelem_t* data;
+    FILE* output;
     int size;
     int capacity;
     int error_code;
-    FILE* output;
-    int error_code_h;
-#ifdef DEBUG
-    stackelem_t canary2;
-#endif
+
+    #ifdef FIRST_LP
+        stackelem_t canary2;
+    #endif
 };
 
 #endif

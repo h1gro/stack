@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "../include/global.h"
@@ -12,12 +13,8 @@ int main()
     StackCtor(&stk);
 
     StackPush(&stk, 10);
-    StackPush(&stk, 20);
-    double a = StackPop(&stk);
-    printf("%lg\n", a);
 
-    int dump_call = INFO_PRINT;
-    StackDump(&stk, __func__, __FILE__, __LINE__, dump_call);
+    StackDump(&stk, __func__, __FILE__, __LINE__, INFO_PRINT);
 
     StackDtor(&stk);
 

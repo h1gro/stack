@@ -1,13 +1,15 @@
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <math.h>
+#include <assert.h>
 
 #include "../include/global.h"
 #include "../include/stackfuncs.h"
 #include "../include/checks.h"
 #include "../include/utilits.h"
 #include "../include/output.h"
+#include "../include/hash.h"
 
 void StackCtor(struct stack_t *stk)
 {
@@ -17,7 +19,7 @@ void StackCtor(struct stack_t *stk)
 
     CheckFile(stk->output);
 
-    #ifdef DEBUG
+    #ifdef FIRST_LP
         stk->canary1 = CANARY;
         stk->canary2 = CANARY;
     #endif
@@ -31,22 +33,39 @@ void StackCtor(struct stack_t *stk)
 
     FillingDataPoison(stk->data, stk->capacity - stk->size);
 
-    stk->data[-1]            = CANARY;
-    stk->data[stk->capacity] = CANARY;
+    #ifdef FIRST_LP
+        stk->data[-1]            = CANARY;
+        stk->data[stk->capacity] = CANARY;
+    #endif
+
+    #ifdef SECOND_LP
+        stk->hash_buffer = HashCalcs(stk->data, stk->size);
+        stk->hash_struct = HashCalcs(stk, sizeof(stk));
+    #endif
 
     STACK_CHECK(stk);
 }
 
 void StackDtor(struct stack_t *stk)
 {
-    assert(stk);
-    assert(stk->data);
+    STACK_CHECK(stk);
+
+    #ifdef SECOND_LP
+        stk->hash_buffer = POISON * POISON;
+        stk->hash_struct = stk->hash_buffer;
+    #endif
+
+    #ifdef FIRST_LP
+        stk->canary1 = POISON;
+        stk->canary2 = stk->canary1;
+    #endif
 
     stk->capacity = 0;
+    stk->size     = 0;
 
-    stk->size = 0;
+    stk->error_code = NO_ERRORS;
 
-    fclose(stk->output);
+    CheckFclose(stk->output);
     free(stk->data - NUM_CANARIES_IN_LEFT);
 }
 
@@ -60,11 +79,15 @@ void StackPush(struct stack_t *stk, stackelem_t elem)
     stk->data[stk->size] = elem;
     stk->size++;
 
-    int dump_call = PUSH;
-    StackDump(stk, __func__, __FILE__, __LINE__, dump_call);
+    StackDump(stk, __func__, __FILE__, __LINE__, PUSH);
 
     assert(stk->capacity);
     assert(stk->size);
+
+    #ifdef SECOND_LP
+        stk->hash_buffer = HashCalcs(stk->data, stk->size);
+        stk->hash_struct = HashCalcs(stk, sizeof(stk));
+    #endif
 
     STACK_CHECK(stk);
 }
@@ -72,6 +95,7 @@ void StackPush(struct stack_t *stk, stackelem_t elem)
 stackelem_t StackPop(struct stack_t *stk)
 {
     STACK_CHECK(stk);
+
     stackelem_t discared_elem = stk->data[stk->size - 1];
     stk->data[stk->size - 1] = POISON;
 
@@ -80,8 +104,12 @@ stackelem_t StackPop(struct stack_t *stk)
 
     stk->size--;
 
-    int dump_call = POP;
-    StackDump(stk, __func__, __FILE__, __LINE__, dump_call);
+    StackDump(stk, __func__, __FILE__, __LINE__, POP);
+
+    #ifdef SECOND_LP
+        stk->hash_buffer = HashCalcs(stk->data, stk->size);
+        stk->hash_struct = HashCalcs(stk, sizeof(stk));
+    #endif
 
     STACK_CHECK(stk);
 

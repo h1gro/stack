@@ -1,0 +1,26 @@
+===============================================
+called from StackPush:77 ./src/stackfuncs.cpp
+name stk born at StackPush:77(./src/stackfuncs.cpp)
+size 1
+capacity 3
+-----------DATA-----------
+data [-1] =  531.531 (CANARY)
+data [ 0] =  10
+data [ 1] = -153.153 (POISON)
+data [ 2] = -153.153 (POISON)
+data [ 3] =  531.531 (CANARY)
+--------------------------
+
+===============================================
+called from main:17 ./src/main.cpp
+name stk born at main:17(./src/main.cpp)
+size 1
+capacity 3
+-----------DATA-----------
+data [-1] =  531.531 (CANARY)
+data [ 0] =  10
+data [ 1] = -153.153 (POISON)
+data [ 2] = -153.153 (POISON)
+data [ 3] =  531.531 (CANARY)
+--------------------------
+

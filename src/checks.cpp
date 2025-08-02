@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <assert.h>
 #include <math.h>
 
@@ -6,95 +7,105 @@
 #include "../include/checks.h"
 #include "../include/output.h"
 #include "../include/stackfuncs.h"
+#include "../include/hash.h"
 
 int StackCheck(struct stack_t *stk, const char* file, int line, const char* func)
 {
     if (CheckForErrors(stk) == NO_ERRORS)
     {
-        return 0;
+        return NO_ERRORS;
     }
 
-    int dump_call = ERROR_PRINT;
+    StackDump(stk, func, file, line, ERROR_PRINT);
 
-    StackDump(stk, func, file, line, dump_call);
-
-    return 1;
+    return ERROR;
 }
 
 int CheckForErrors(struct stack_t *stk)
 {
-    assert(stk);
-    assert(stk->data);
-    assert(stk->capacity);
-    assert(stk->size >= 0);
-    assert(fabs(stk->data[-1]            - CANARY) < EPSILON);
-    assert(fabs(stk->data[stk->capacity] - CANARY) < EPSILON);
+    // assert(stk);
+    // assert(stk->data);
+    // assert(stk->capacity);
+    // assert(stk->size >= 0);
+    // assert(fabs(stk->data[-1]            - CANARY) < EPSILON);
+    // assert(fabs(stk->data[stk->capacity] - CANARY) < EPSILON);
+    // assert(fabs(stk->canary1 - CANARY) < EPSILON);
+    // assert(fabs(stk->canary2 - CANARY) < EPSILON);
 
-    //printf("canary1 = %lg, canary2 = %lg\n", stk->canary1, stk->canary2);
-    // #ifdef DEBUG
-    //     assert(fabs(stk->canary1 - CANARY) < EPSILON);
-    //     assert(fabs(stk->canary2 - CANARY) < EPSILON);
-    // #endif
+    stk->error_code = Verifier(stk);
 
-    #ifdef DEBUG //in debug mode check struct
+    return stk->error_code;
+}
 
-        if (fabs(stk->canary1 - CANARY) > EPSILON)
-        {
-            stk->error_code = CANARY1_STR_ERROR;
-            return stk->error_code;
-        }
-
-        if (fabs(stk->canary2 - CANARY) > EPSILON)
-        {
-            stk->error_code = CANARY2_STR_ERROR;
-            return stk->error_code;
-        }
-
-    #endif
-
-    //in default mode check only buffer
-    
+errors Verifier(struct stack_t* stk)
+{
     if (stk == NULL)
     {
-        stk->error_code = STK_ERROR;
-        return stk->error_code;
+        return STK_ERROR;
     }
 
     if (stk->data == NULL)
     {
-        stk->error_code = CTOR_ERROR;
-        return stk->error_code;
+        return CTOR_ERROR;
+    }
+
+    if (stk->output == NULL)
+    {
+        return FILE_ERROR;
     }
 
     if (stk->capacity == 0)
     {
-        stk->error_code = CAPACITY_ERROR;
-        return stk->error_code;
+        return CAPACITY_ERROR;
     }
 
     if (stk->size < 0)
     {
-        stk->error_code = SIZE_ERROR;
-        return stk->error_code;
+        return SIZE_ERROR;
     }
 
     if (stk->size > stk->capacity)
     {
-        stk->error_code = PUSH_ERROR;
-        return stk->error_code;
+        return PUSH_ERROR;
     }
 
-    if (fabs(stk->data[-1] - CANARY) > EPSILON)
-    {
-        stk->error_code = CANARY1_BUF_ERROR;
-        return stk->error_code;
-    }
+    #ifdef FIRST_LP
 
-    if (fabs(stk->data[stk->capacity] - CANARY) > EPSILON)
-    {
-        stk->error_code = CANARY2_BUF_ERROR;
-        return stk->error_code;
-    }
+        if (fabs(stk->data[-1] - CANARY) > EPSILON)
+        {
+            return CANARY1_BUF_ERROR;
+        }
+
+        if (fabs(stk->data[stk->capacity] - CANARY) > EPSILON)
+        {
+            return CANARY2_BUF_ERROR;
+        }
+
+        if (fabs(stk->canary1 - CANARY) > EPSILON)
+        {
+            return CANARY1_STR_ERROR;
+        }
+
+        if (fabs(stk->canary2 - CANARY) > EPSILON)
+        {
+            return CANARY2_STR_ERROR;
+        }
+
+    #endif
+
+    #ifdef SECOND_LP
+
+        if (stk->hash_buffer != HashCalcs(stk->data, stk->size))
+        {
+            return HASH_BUFFER_ERROR;
+        }
+
+        if (stk->hash_struct != HashCalcs(stk, sizeof(stk)))
+        {
+            return HASH_STRUCT_ERROR;
+        }
+
+    #endif
 
     return NO_ERRORS;
 }

@@ -14,8 +14,8 @@ flags = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop
 all: main clean
 
 
-main: main.o stackfuncs.o checks.o output.o utilits.o
-	g++ main.o stackfuncs.o checks.o output.o utilits.o $(flags) -o stack
+main: main.o stackfuncs.o checks.o output.o utilits.o hash.o
+	g++ main.o stackfuncs.o checks.o output.o utilits.o hash.o $(flags) -o stack
 
 main.o: ./src/main.cpp
 	g++ -c $(flags) ./src/main.cpp
@@ -32,8 +32,11 @@ output.o: ./src/output.cpp
 utilits.o: ./src/utilits.cpp
 	g++ -c $(flags) ./src/utilits.cpp
 
+hash.o: ./src/hash.cpp
+	g++ -c $(flags) ./src/hash.cpp
+
 run:
 	./stack
-	
+
 clean:
 	rm -rf *.o *.exe
