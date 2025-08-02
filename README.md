@@ -6,7 +6,7 @@ Stack - data structure, it is lockated in every PC. Stack works like FILO (first
 
 This project is an emulator of stack, that based on array, user can add number to stack or delete last added element.
 
-![Stack Visualisation](https://github.com/h1gro/stack/tree/main/image)
+![Stack Visualisation](https://github.com/h1gro/stack/blob/main/image/AQAKYYPaN9shRTH2Q3jRWOfX5GFd-QSaSaP6Nre3uuPhT9e-89toJ9598WrFQNUteQ820ruUaO7-1FOGvylcpe7Pl9I.png)
 
 ## Comands
 
