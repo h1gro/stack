@@ -95,7 +95,7 @@ enum canaries
 struct stack_t
 {
     #ifdef FIRST_LP
-    stackelem_t canary1;
+        stackelem_t canary1;
     #endif
 
     #ifdef DEBUG
@@ -106,8 +106,8 @@ struct stack_t
     #endif
 
     #ifdef SECOND_LP
-    uint_least32_t hash_buffer;
-    uint_least32_t hash_struct;
+        uint_least32_t hash_buffer;
+        uint_least32_t hash_struct;
     #endif
 
     stackelem_t* data;
